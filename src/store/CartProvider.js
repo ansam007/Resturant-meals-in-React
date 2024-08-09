@@ -15,14 +15,14 @@ const cartReducer = (state, action) => {
       (item) => item.id === action.item.id
     );
 
-    const existingCartIem = state.items[existingCartItemIndex];
+    const existingCartItem = state.items[existingCartItemIndex];
 
     let updatedItems;
 
-    if(existingCartIem){
+    if(existingCartItem){
       const updatedItem = {
-        ...existingCartIem,
-        amount: existingCartIem.amount + action.item.amount,
+        ...existingCartItem,
+        amount: existingCartItem.amount + action.item.amount,
       }
       updatedItems = [...state.items];
       updatedItems[existingCartItemIndex] = updatedItem;
@@ -58,6 +58,10 @@ const cartReducer = (state, action) => {
 
   return defaultCartState;
 };
+
+
+
+
 
 const CartProvider = (props) => {
   const [cartState, dispatchCartAction] = useReducer(

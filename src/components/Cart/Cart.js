@@ -1,53 +1,51 @@
-import classes from "./Cart.module.css";
+import React, { useContext } from "react";
+import ContextProvider from "../../store/CartProvider";
 import Modal from "../UI/Modal";
-import { useContext } from "react";
-import CartContext from "../../store/cart-context";
-import CartItem from "./CartItem";
+import classes from './Cart.module.css';
 
 const Cart = (props) => {
-  const cartCtx = useContext(CartContext);
+ const ctx = useContext(ContextProvider);
 
-  const totalAmount = `$${cartCtx.totalAmount.toFixed(2)}`;
-  const hasItems = cartCtx.items.length > 0;
+ const addItem = (item) => {
+   ctx.cartIncrease(item);
+ };
 
-  const cartItemRemoveHandler = (id) => {
-    cartCtx.removeItem(id);
-  };
+ const decreaseItem = (item) => {
+   ctx.cartDecrease(item);
+ };
 
-  const cartItemAddHandler = (item) => {
-    cartCtx.addItem({...item, amount:1})
-  };
+ return (
+   <Modal>
+     <div className={classes['cart-modal']}>
+       <ul>
+         {ctx.cartItems.map((item, index) => {
+           const itemInItems = ctx.items.find(
+             (i) => i.medicine === item.medicine
+           );
 
-  const cartItems = (
-    <ul className={classes["cart-items"]}>
-      {cartCtx.items.map((item) => (
-        <CartItem
-          key={item.id}
-          name={item.name}
-          amount={item.amount}
-          price={item.price}
-          onRemove={cartItemRemoveHandler.bind(null, item.id)}
-          onAdd={cartItemAddHandler.bind(null, item)}
-        />
-      ))}
-    </ul>
-  );
-
-  return (
-    <Modal closeIt={props.onClose}>
-      {cartItems}
-      <div className={classes.total}>
-        <span>Total Amount</span>
-        <span>{totalAmount}</span>
-      </div>
-      <div className={classes.actions}>
-        <button className={classes["button--alt"]} onClick={props.onClose}>
-          Close
-        </button>
-        {hasItems && <button className={classes.button}>Order</button>}
-      </div>
-    </Modal>
-  );
+           return (
+             <li key={index}>
+               {item.medicine} || Rs.{item.price} || Quantity: {item.amount}
+               {itemInItems && itemInItems.amount > 0 && (
+                 <button onClick={() => addItem(item)} className={classes['cart-button']}>+</button>
+               )}
+               <button onClick={() => decreaseItem(item)} className={classes['cart-button']}>-</button>
+             </li>
+           );
+         })}
+       </ul>
+       <div className={classes['total']}>
+         <span>
+           Total Cart Value: <b>Rs.{ctx.totalAmount}</b>
+         </span>
+       </div>
+       <div>
+         <button onClick={props.onClose} className={classes['close-button']}>Close</button>
+       </div>
+     </div>
+   </Modal>
+ );
 };
 
 export default Cart;
+
